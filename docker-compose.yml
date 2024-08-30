@@ -1,14 +1,14 @@
 services:
-  mvp_backend:
-    container_name: mvp_backend
-    image: mvp_backend
+  orom_backend:
+    container_name: orom_backend
+    image: orom_backend
     build:
       context: .
       dockerfile: docker/Dockerfile
+    #command: "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
+    command: python orom_backend/manage.py runserver 0.0.0.0:8000
+    restart: always
     volumes:
       - .:/app
     ports:
       - "8000:8000"
-    tty: true
-
-
