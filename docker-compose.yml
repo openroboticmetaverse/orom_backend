@@ -1,0 +1,14 @@
+services:
+  mvp_backend:
+    container_name: mvp_backend
+    image: mvp_backend
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    tty: true
+
+
