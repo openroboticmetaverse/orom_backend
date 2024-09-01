@@ -11,6 +11,7 @@
 
 This project serves as the backend of the robotic metaverse, that brings robotic projects in one place.
 
+
 ## Technology Stack 🛠️
 - Backend Framework: Django and Django REST
 - Database: Postgres
@@ -34,5 +35,10 @@ cd orom_backend
 docker compose up
 ```
 The server will automatically start
+
+## Learning Resources
+When you are new to Django check out: [Writing your first Django app](https://docs.djangoproject.com/en/5.1/intro/tutorial01/)  <br>
+Here you can find the [Django Documentation](https://docs.djangoproject.com) and the [Django REST Documentation](https://www.django-rest-framework.org/)
+
 
 Enjoy 🎉🥳
