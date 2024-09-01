@@ -1,4 +1,15 @@
 services:
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: orom_db
+      POSTGRES_USER: orom_admin
+      POSTGRES_PASSWORD: oromPWD4879
+    ports:
+      - "5432:5432"
+
   orom_backend:
     container_name: orom_backend
     image: orom_backend
@@ -12,3 +23,8 @@ services:
       - .:/app
     ports:
       - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
