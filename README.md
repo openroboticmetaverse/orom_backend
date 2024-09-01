@@ -22,7 +22,6 @@ This project serves as the backend of the robotic metaverse, that brings robotic
 
 ```bash
 git clone https://github.com/openroboticmetaverse/orom_backend.git
-
 ```
 
 ```bash

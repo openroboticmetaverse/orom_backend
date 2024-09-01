@@ -1,4 +1,5 @@
 from django.db import models
+import os
 
 
 class ReferenceObject(models.Model):
@@ -15,6 +16,14 @@ class ReferenceObject(models.Model):
 
     def __str__(self):
         return f"ReferenceObject: {self.name} of type {self.file_type}"
+    
+    def save(self, *args, **kwargs):
+        # Set file_type according to uploaded file
+        if self.file and not self.file_type:
+            _, extension = os.path.splitext(self.file.name)
+            self.file_type = extension.lower().strip('.')
+        super().save(*args, **kwargs)
+
 
 
 
