@@ -11,9 +11,6 @@
 
 This project serves as the backend of the robotic metaverse, that brings robotic projects in one place.
 
-![image](https://github.com/user-attachments/assets/26531ac3-e93b-4ad2-9bd1-1c82543c13a0)
-
-
 ## Technology Stack 🛠️
 - Backend Framework: Django and Django REST
 - Database: Postgres
