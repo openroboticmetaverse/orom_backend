@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     
     'object_library',
-    'object_manager',
+    'scene_manager',
 ]
 
 MIDDLEWARE = [
