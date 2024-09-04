@@ -1,0 +1,297 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "object_library",
+    "collectionId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+    "dateExported": "2024-09-04T17:25:20.768Z",
+    "version": "1.2",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "9ab2b865-6366-4cad-818d-e7f4bb3bf47b",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_robots - List",
+            "url": "http://localhost:8000/library/ref-robots/",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-09-04T16:49:16.797Z",
+            "modified": "2024-09-04T16:55:29.359Z",
+            "headers": []
+        },
+        {
+            "_id": "60841476-2b82-4733-9162-1a1d7b023156",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_robots - Retrieve",
+            "url": "http://localhost:8000/library/ref-robots/1",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-09-04T16:52:52.384Z",
+            "modified": "2024-09-04T16:55:34.357Z",
+            "headers": []
+        },
+        {
+            "_id": "edf9c953-d7af-4082-9c4a-9b9625a59248",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_robots - Create",
+            "url": "http://localhost:8000/library/ref-robots/",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-09-04T16:55:59.445Z",
+            "modified": "2024-09-04T16:57:50.754Z",
+            "headers": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "name",
+                        "value": "UR5e-Test"
+                    },
+                    {
+                        "name": "description",
+                        "value": "UR5e model for testing"
+                    },
+                    {
+                        "name": "num_joints",
+                        "value": "7"
+                    }
+                ],
+                "files": [
+                    {
+                        "name": "file",
+                        "value": "/home/yannick/OROM/mvp_mujoco_simulation/config/universal_robots_ur5e/ur5e.xml"
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "8fd7b360-4cc3-4d34-bfd7-ffbbf5074b67",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_robots - Update",
+            "url": "http://localhost:8000/library/ref-robots/2/",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2024-09-04T16:58:16.687Z",
+            "modified": "2024-09-04T16:59:22.572Z",
+            "headers": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "name",
+                        "value": "UR5e-Test"
+                    },
+                    {
+                        "name": "description",
+                        "value": "Test request"
+                    },
+                    {
+                        "name": "num_joints",
+                        "value": "7"
+                    }
+                ],
+                "files": [
+                    {
+                        "name": "file",
+                        "value": "/home/yannick/OROM/mvp_mujoco_simulation/config/universal_robots_ur5e/ur5e.xml"
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "f6e690cb-d8fe-491b-89c9-8ef097978785",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_robots - Partial Update",
+            "url": "http://localhost:8000/library/ref-robots/2/",
+            "method": "PATCH",
+            "sortNum": 50000,
+            "created": "2024-09-04T17:00:23.704Z",
+            "modified": "2024-09-04T17:00:40.540Z",
+            "headers": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "name",
+                        "value": "UR5e-Test 2.0"
+                    },
+                    {
+                        "name": "description",
+                        "value": "Test request",
+                        "isDisabled": true
+                    },
+                    {
+                        "name": "num_joints",
+                        "value": "7",
+                        "isDisabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "3b10a59b-2738-47f1-b480-cfbf5ce72447",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_robots - Delete",
+            "url": "http://localhost:8000/library/ref-robots/2/",
+            "method": "DELETE",
+            "sortNum": 60000,
+            "created": "2024-09-04T17:00:47.081Z",
+            "modified": "2024-09-04T17:01:23.856Z",
+            "headers": []
+        },
+        {
+            "_id": "2f264d1e-4e43-48ef-9e9e-4ea4111ab835",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_objects - List",
+            "url": "http://localhost:8000/library/ref-objects/",
+            "method": "GET",
+            "sortNum": 70000,
+            "created": "2024-09-04T17:13:11.792Z",
+            "modified": "2024-09-04T17:14:13.381Z",
+            "headers": []
+        },
+        {
+            "_id": "0bcf4eff-cf82-4252-9aff-4d726b87d3ab",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_objects - Retrieve",
+            "url": "http://localhost:8000/library/ref-objects/1",
+            "method": "GET",
+            "sortNum": 80000,
+            "created": "2024-09-04T17:14:19.034Z",
+            "modified": "2024-09-04T17:14:38.097Z",
+            "headers": []
+        },
+        {
+            "_id": "697a0fba-d83d-40d7-b13e-02e872d76ca5",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_objects - Create",
+            "url": "http://localhost:8000/library/ref-objects/",
+            "method": "POST",
+            "sortNum": 90000,
+            "created": "2024-09-04T17:14:50.094Z",
+            "modified": "2024-09-04T17:16:18.413Z",
+            "headers": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "name",
+                        "value": "White Mug Test"
+                    },
+                    {
+                        "name": "description",
+                        "value": "Mug model for testing"
+                    },
+                    {
+                        "name": "color",
+                        "value": "",
+                        "isDisabled": true
+                    }
+                ],
+                "files": [
+                    {
+                        "name": "file",
+                        "value": "/home/yannick/Downloads/white_mug.obj"
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "95a85c66-45d1-458e-bf92-fb7e9599eb41",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_objects - Update",
+            "url": "http://localhost:8000/library/ref-objects/2/",
+            "method": "PUT",
+            "sortNum": 100000,
+            "created": "2024-09-04T17:19:44.458Z",
+            "modified": "2024-09-04T17:20:42.445Z",
+            "headers": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "name",
+                        "value": "White Mug 1.0"
+                    },
+                    {
+                        "name": "description",
+                        "value": "Testing stuff"
+                    },
+                    {
+                        "name": "color",
+                        "value": "",
+                        "isDisabled": true
+                    }
+                ],
+                "files": [
+                    {
+                        "name": "file",
+                        "value": "/home/yannick/Downloads/white_mug.obj"
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "a4102b74-1de1-4ca3-8cf0-cc5823ad0885",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_object - Partial Update",
+            "url": "http://localhost:8000/library/ref-objects/2/",
+            "method": "PATCH",
+            "sortNum": 110000,
+            "created": "2024-09-04T17:21:07.120Z",
+            "modified": "2024-09-04T17:22:20.948Z",
+            "headers": [],
+            "body": {
+                "type": "formdata",
+                "raw": "",
+                "form": [
+                    {
+                        "name": "name",
+                        "value": "White Mug 2.0"
+                    },
+                    {
+                        "name": "description",
+                        "value": "Testing"
+                    },
+                    {
+                        "name": "color",
+                        "value": "",
+                        "isDisabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "b256c915-c99a-4597-8164-5c4f2e2d9ea6",
+            "colId": "736295af-eb9e-47bf-93da-a0c87ae5fc65",
+            "containerId": "",
+            "name": "ref_objects - Delete",
+            "url": "http://localhost:8000/library/ref-objects/3/",
+            "method": "DELETE",
+            "sortNum": 120000,
+            "created": "2024-09-04T17:22:27.059Z",
+            "modified": "2024-09-04T17:22:48.187Z",
+            "headers": []
+        }
+    ],
+    "settings": {
+        "options": {
+            "baseUrl": "localhost:8000/"
+        }
+    },
+    "ref": "UTg8c12SOc-09u_2XNeNCcIHMd8gN6r4-KumgGKincYSMRrFs8hfkqoih1MSg21m6U3BNgTDgb1cmFvZh48ZNA"
+}

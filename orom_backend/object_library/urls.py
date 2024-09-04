@@ -1,17 +1,13 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
-    ReferenceObjectListCreateView, 
-    ReferenceObjectDetailView, 
-    ReferenceRobotListCreateView, 
-    ReferenceRobotDetailView
+    ReferenceRobotViewSet, ReferenceObjectViewSet
 )
+from rest_framework.routers import SimpleRouter
+router = SimpleRouter()
+router.register('ref-robots', ReferenceRobotViewSet)
+router.register('ref-objects', ReferenceObjectViewSet)
+
 
 urlpatterns = [
-    # ReferenceObject URLs
-    path('ref-objects/', ReferenceObjectListCreateView.as_view(), name='reference-object-list-create'),
-    path('ref-objects/<int:pk>/', ReferenceObjectDetailView.as_view(), name='reference-object-detail'),
-
-    # ReferenceRobot URLs
-    path('ref-robots/', ReferenceRobotListCreateView.as_view(), name='reference-robot-list-create'),
-    path('ref-robots/<int:pk>/', ReferenceRobotDetailView.as_view(), name='reference-robot-detail'),
+    path('', include(router.urls)),
 ]
