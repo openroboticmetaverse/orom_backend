@@ -13,5 +13,3 @@ class ReferenceRobotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReferenceRobot
         fields = '__all__'
-
-# TODO: Check out for Scene: https://github.com/MattBroach/DjangoRestMultipleModels
