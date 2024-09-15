@@ -23,6 +23,7 @@ class Scene(models.Model):
 class AbstractObject(models.Model):
     """Abstract class for common properties and functions"""
     name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
     scene_id = models.ForeignKey(Scene, on_delete=models.CASCADE)   # if a scene is deleted, all connected objects are deleted
     position = ArrayField(models.FloatField(), size=3, null=True, blank=True)              # [x, y, z]
     orientation = ArrayField(models.FloatField(), size=3, null=True, blank=True)           # [roll, pitch, yaw]
