@@ -33,7 +33,10 @@ cd orom_backend
 ```bash
 docker compose up
 ```
-The server will automatically start
+Sometimes only the database but not the webserver starts. Then run instead:
+```bash
+docker compose up --build
+```
 
 ## Learning Resources
 When you are new to Django check out: [Writing your first Django app](https://docs.djangoproject.com/en/5.1/intro/tutorial01/)  <br>
