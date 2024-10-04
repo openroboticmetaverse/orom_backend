@@ -33,7 +33,29 @@ cd orom_backend
 ```bash
 docker compose up
 ```
-The server will automatically start
+The server will automatically start. If only the database is starting and not the webserver run:
+```bash
+docker compose up --build
+```
+
+3. On the first startup: After starting the docker container open a second terminal and run:
+```bash
+docker exec -it orom_backend bash
+```
+```bash
+cd orom_backend
+```
+```bash
+python manage.py makemigrations
+```
+```bash
+python manage.py migrate
+```
+Now the database is build and you can start using the app. 
+For easier use you can also create an admin to enable the adminpanel under localhost:8000/admin/
+```bash
+python manage.py createsuperuser
+```
 
 ## Learning Resources
 When you are new to Django check out: [Writing your first Django app](https://docs.djangoproject.com/en/5.1/intro/tutorial01/)  <br>
