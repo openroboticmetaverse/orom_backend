@@ -33,7 +33,7 @@ cd orom_backend
 ```bash
 docker compose up
 ```
-The server will automatically start. If only the database is starting and not the webserver run:
+The server will automatically start. Sometimes only the database but not the webserver starts. Then run instead:
 ```bash
 docker compose up --build
 ```
