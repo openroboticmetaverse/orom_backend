@@ -33,29 +33,37 @@ cd orom_backend
 ```bash
 docker compose up
 ```
-The server will automatically start. Sometimes only the database but not the webserver starts. Then run instead:
-```bash
-docker compose up --build
-```
 
-3. On the first startup: After starting the docker container open a second terminal and run:
-```bash
-docker exec -it orom_backend bash
-```
-```bash
-cd orom_backend
-```
-```bash
-python manage.py makemigrations
-```
-```bash
-python manage.py migrate
-```
+## Development ⌨️
+1. Create Admin User
+
 Now the database is build and you can start using the app. 
 For easier use you can also create an admin to enable the adminpanel under localhost:8000/admin/
 ```bash
 python manage.py createsuperuser
 ```
+2. API Testing
+
+For API testing we are using Hoppscotch. To be added to our workspace message one of us. To run the requests you need to install the [browser extension](https://github.com/hoppscotch/hoppscotch-extension).
+
+3. Django Model Changes 
+When adapting the models.py file, you have to migrate these changes to the current database entries (in development it often is easier to just reseting the whole db and starting from zero)
+```bash
+docker exec -it orom_backend bash
+```
+```bash
+python orom_backend/manage.py makemigrations
+```
+```bash
+python orom_backend/manage.py migrate
+```
+How to start from zero:
+You have to delete the database image and postgres-volume. If you are only working on this project and have no other Docker projects just run: <br>
+(__warning__: Docker will delete all container, images and volumes)
+```bash
+docker system prune -a
+```
+
 
 ## Learning Resources
 When you are new to Django check out: [Writing your first Django app](https://docs.djangoproject.com/en/5.1/intro/tutorial01/)  <br>

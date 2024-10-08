@@ -1,2 +1,0 @@
-For testing the api install the VS Code extension "Thunder Client" and import the collection contained in this folder.
-If you change something and want to share it with the team, you have to export the collection and push the file to GitHub.
