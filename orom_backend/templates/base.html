@@ -1,0 +1,19 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My Site{% endblock %}</title>
+</head>
+<body>
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

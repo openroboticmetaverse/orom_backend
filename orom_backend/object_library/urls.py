@@ -1,4 +1,8 @@
 from django.urls import path
+from object_manager import views 
+from django.contrib.auth import views as auth_views
+
+ # Import views from object_manager
 from .views import (
     ReferenceObjectListCreateView, 
     ReferenceObjectDetailView, 
@@ -11,7 +15,7 @@ urlpatterns = [
     path('ref-objects/', ReferenceObjectListCreateView.as_view(), name='reference-object-list-create'),
     path('ref-objects/<int:pk>/', ReferenceObjectDetailView.as_view(), name='reference-object-detail'),
 
-    # ReferenceRobot URLs
-    path('ref-robots/', ReferenceRobotListCreateView.as_view(), name='reference-robot-list-create'),
-    path('ref-robots/<int:pk>/', ReferenceRobotDetailView.as_view(), name='reference-robot-detail'),
+    path('register/', views.register, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
 ]

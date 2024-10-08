@@ -16,8 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from object_library import views  # Make sure views.register is defined in object_library
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('library/', include("object_library.urls")),
+ # ReferenceObject views
+    path('reference-objects/', views.ReferenceObjectListCreateView.as_view(), name='reference-object-list'),
+    path('reference-objects/<int:pk>/', views.ReferenceObjectDetailView.as_view(), name='reference-object-detail'),
+
+       path('accounts/', include('object_library.urls')),  # Include object_library URLs
+
 ]
