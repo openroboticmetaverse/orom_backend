@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:latest
+    image: postgres:16.0
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -16,8 +16,10 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    #command: "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"
-    command: python orom_backend/manage.py runserver 0.0.0.0:8000
+    command: sh -c "
+              python orom_backend/manage.py migrate --noinput && 
+              python orom_backend/manage.py runserver 0.0.0.0:8000
+            "
     restart: always
     volumes:
       - .:/app
