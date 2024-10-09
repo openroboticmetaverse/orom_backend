@@ -7,6 +7,8 @@ class ReferenceObjectSerializer(serializers.ModelSerializer):
         #exclude = ('file_type')
         fields = '__all__'
 
+
+
 class ReferenceRobotSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReferenceRobot

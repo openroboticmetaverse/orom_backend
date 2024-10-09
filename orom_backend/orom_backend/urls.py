@@ -20,10 +20,10 @@ from object_library import views  # Make sure views.register is defined in objec
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
- # ReferenceObject views
-    path('reference-objects/', views.ReferenceObjectListCreateView.as_view(), name='reference-object-list'),
-    path('reference-objects/<int:pk>/', views.ReferenceObjectDetailView.as_view(), name='reference-object-detail'),
+    path('admin/', admin.site.urls),
+    path('accounts/', include('user_manager.urls')),
 
-       path('accounts/', include('object_library.urls')),  # Include object_library URLs
+    path('library/', include("object_library.urls")),
+    path('scene-manager/', include("scene_manager.urls")),
 
 ]
