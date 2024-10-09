@@ -17,6 +17,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: sh -c "
+              python orom_backend/manage.py makemigrations &&
               python orom_backend/manage.py migrate --noinput && 
               python orom_backend/manage.py runserver 0.0.0.0:8000
             "

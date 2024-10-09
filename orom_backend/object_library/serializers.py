@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import ReferenceObject, ReferenceRobot
 
+
+
 class ReferenceObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReferenceObject
