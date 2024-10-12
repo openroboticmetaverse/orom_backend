@@ -39,6 +39,7 @@ class ReferenceRobot(AbstractReference):
     """
     Database of objects the user can place in their scene.
     TODO: Make some objects only available for the user who uploaded it
+    TODO: Implement check if num_joints is 0 or negative
     """
     num_joints = models.IntegerField()
 
