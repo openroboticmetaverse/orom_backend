@@ -140,3 +140,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Serve static files
+#! this is only valid for development. In production the static files should be handled by a cloud storage or nginx running in an own container
+MEDIA_URL = 'media/'
+MEDIA_ROOT = '/app/object_files/'
