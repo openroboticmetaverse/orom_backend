@@ -140,3 +140,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Serve static files
+MEDIA_URL = '/object_files/'
+MEDIA_ROOT = "/app/object_files/"
+print(f">>>{MEDIA_ROOT}")
