@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Object, Robot, Scene
 from .serializers import ObjectSerializer, RobotSerializer, SceneSerializer
+from .utils import build_mujoco_image, run_mujoco_container
+
 
 
 class ObjectViewSet(viewsets.ModelViewSet):
@@ -54,3 +56,30 @@ class SceneViewSet(viewsets.ModelViewSet):
             'robots': robot_serializer.data,
             'objects': object_serializer.data
         }, status=status.HTTP_200_OK)
+
+
+
+class MujocoSimulation(APIView):
+    
+    image_name = "sim_mujoco"
+    dockerfile_path = "/app/docker/"
+    dockefile_name = "Dockerfile_Mujoco"
+
+    def post(self, request):
+        # TODO: Check if container of that user and scene exists or is already running
+        try:
+            # Check if image exists or build it
+            build_mujoco_image(self.image_name, self.dockerfile_path, self.dockefile_name)
+
+            # Start a new MuJoCo simulation container
+            print("> Execute run_mujoco_container")
+            container = run_mujoco_container(self.image_name, request.data['user_id'], request.data['scene_id'])
+            print(f"> Finished run_mujoco_container: ID {container.id}")
+
+            # Respond with container information
+            return Response({"container_id": container.id}, status=status.HTTP_201_CREATED)
+        
+        except Exception as ex:
+            # Handle errors (e.g., container creation failure)
+            print(str(ex))
+            return Response({"error": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

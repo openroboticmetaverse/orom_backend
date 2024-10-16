@@ -15,7 +15,7 @@ services:
     image: orom_backend
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile_Backend
     command: sh -c "
               python orom_backend/manage.py migrate --noinput && 
               python orom_backend/manage.py runserver 0.0.0.0:8000
@@ -23,6 +23,8 @@ services:
     restart: always
     volumes:
       - .:/app
+      # bind the host's Docker socket into your Django container
+      - /var/run/docker.sock:/var/run/docker.sock 
     ports:
       - "8000:8000"
     depends_on:

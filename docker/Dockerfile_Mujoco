@@ -1,0 +1,21 @@
+FROM python:slim-bookworm
+
+SHELL ["/bin/bash", "-c", "-o", "pipefail"]
+
+RUN apt-get update && apt-get upgrade
+RUN apt-get install -y x11-apps x11-utils libx11-dev \
+                        git
+
+#COPY requirements_Mujoco.txt /sim_ws/requirements.txt
+WORKDIR /sim_ws
+
+RUN pip install websockets
+RUN pip install numpy
+RUN pip install mediapy
+RUN pip install tqdm
+RUN pip install mujoco-py
+#                ffmpeg-python
+
+
+#RUN python3 /sim_ws/src/mujoco_simulation.py
+
