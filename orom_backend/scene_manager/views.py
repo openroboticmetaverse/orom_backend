@@ -1,9 +1,11 @@
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from threading import Thread
+
 from .models import Object, Robot, Scene
 from .serializers import ObjectSerializer, RobotSerializer, SceneSerializer
-from .utils import build_mujoco_image, run_mujoco_container
+from .utils import build_mujoco_image, run_mujoco_simulation_in_background
 
 
 
@@ -60,24 +62,38 @@ class SceneViewSet(viewsets.ModelViewSet):
 
 
 class MujocoSimulation(APIView):
+    """
+    A viewset that controls the simulation container
+    Currently only the POST-method is implemented
+    """
     
-    image_name = "sim_mujoco"
-    dockerfile_path = "/app/docker/"
-    dockefile_name = "Dockerfile_Mujoco"
+    image_name = "sim_mujoco"                       # name of docker image
+    dockerfile_path = "/app"                        # path to work directory inside the backend docker container
+    dockerfile_name = "docker/Dockerfile_Mujoco"    # filepath of dockerfile
+    container_port = 1345                           # port of simulation container #TODO: make dynamic
+    host_port = 1345                                # port of frontend, constant because frontend container has only 1 websocket
 
     def post(self, request):
         # TODO: Check if container of that user and scene exists or is already running
+        # TODO: How to generate unused port
+        # TODO: Enable pulling from registry
+        # TODO: Currently the config folder with robot models is copied into container -> get data from database
+        # TODO: Check and improve logging of simulation container
+        # TODO: Implement api to stop container
         try:
-            # Check if image exists or build it
-            build_mujoco_image(self.image_name, self.dockerfile_path, self.dockefile_name)
+            # Build image if it does not exist
+            build_mujoco_image(self.image_name, self.dockerfile_path, self.dockerfile_name)
 
-            # Start a new MuJoCo simulation container
-            print("> Execute run_mujoco_container")
-            container = run_mujoco_container(self.image_name, request.data['user_id'], request.data['scene_id'])
-            print(f"> Finished run_mujoco_container: ID {container.id}")
+            # Run the Mujoco simulation container asynchronously in a thread
+            print("> Start simulation container")
+            thread = Thread(target=run_mujoco_simulation_in_background,
+                            args=(self.image_name, self.container_port, self.host_port, 
+                                  request.data['user_id'], request.data['scene_id']))
+            thread.start()
 
             # Respond with container information
-            return Response({"container_id": container.id}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Simulation-Container starting", "host_port": self.host_port}, 
+                            status=status.HTTP_201_CREATED)
         
         except Exception as ex:
             # Handle errors (e.g., container creation failure)

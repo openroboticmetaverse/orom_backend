@@ -23,7 +23,7 @@ services:
     restart: always
     volumes:
       - .:/app
-      # bind the host's Docker socket into your Django container
+      # Bind the host's Docker socket into Django container (required for starting the mujoco container)
       - /var/run/docker.sock:/var/run/docker.sock 
     ports:
       - "8000:8000"
