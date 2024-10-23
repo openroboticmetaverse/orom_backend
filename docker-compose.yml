@@ -11,7 +11,7 @@ services:
       - "5432:5432"
 
   orom_backend:
-    container_name: orom_backend
+    container_name: orom-backend
     image: orom_backend
     build:
       context: .
@@ -21,6 +21,10 @@ services:
               python orom_backend/manage.py runserver 0.0.0.0:8000
             "
     restart: always
+    environment:
+      # Both are used in the mujoco simulation container
+      - OROM_BACKEND_PATH=${OROM_BACKEND_PATH}
+      - OROM_BACKEND_URL=http://orom-backend:8000
     volumes:
       - .:/app
       # Bind the host's Docker socket into Django container (required for starting the mujoco container)

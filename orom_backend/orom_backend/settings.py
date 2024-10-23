@@ -30,7 +30,8 @@ SECRET_KEY = "fr8+v6w)lokun#5qtt4-aao=g4*ee7$==97h=kzb1358*jn!y8"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# TODO: Implement middleware to allow all requests from sim_mujoco_* containers -> research about safety of wildcard
+ALLOWED_HOSTS = ["localhost","localhost:8000","sim_mujoco_1_2","orom-backend"]
 
 
 # Application definition

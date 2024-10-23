@@ -6,7 +6,6 @@ RUN apt-get update && apt-get upgrade
 RUN apt-get install -y x11-apps x11-utils libx11-dev
 
 
-COPY ./simulation_mujoco /sim_ws
 WORKDIR /sim_ws
 
 RUN pip install --upgrade pip
@@ -15,6 +14,5 @@ RUN pip install numpy
 RUN pip install mediapy
 RUN pip install tqdm
 RUN pip install mujoco
+RUN pip install requests
 #                ffmpeg-python
-
-CMD ["python", "-u", "/sim_ws/mujoco_simulation.py"]

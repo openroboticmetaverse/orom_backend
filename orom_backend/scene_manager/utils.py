@@ -1,12 +1,12 @@
 import docker
-
+import os
 
 client = docker.from_env()
 
 
-def build_mujoco_image(image_name, dockerfile_path, dockefile_name):
+def build_mujoco_image(image_name, dockerfile_path, dockerfile_name):
     """
-    Builds the docker image if does not exist
+    Builds the docker image for the mujoco simulation (if does not exist)
     TODO: Delete intermediate images (tag and name=none) after building
     """
     try:
@@ -21,7 +21,7 @@ def build_mujoco_image(image_name, dockerfile_path, dockefile_name):
             image, build_logs = client.images.build(
                                     path=dockerfile_path, 
                                     tag=image_name,
-                                    dockerfile=dockefile_name,
+                                    dockerfile=dockerfile_name,
                                     nocache=True,
                                     rm=True,
                                     forcerm=True,
@@ -38,14 +38,16 @@ def build_mujoco_image(image_name, dockerfile_path, dockefile_name):
                     for line in log['stream'].splitlines():
                         print(str(line))
             
-            # Try to clean up by removing any partially built image
+            # When building fails: try to clean up by removing any partially built image
             try:
                 image = client.images.get(image_name)
                 print(f"Cleaning up: removing partially built image '{image_name}'...")
                 client.images.remove(image=image.id, force=True)
                 print(f"Image '{image_name}' removed successfully.")
+
             except docker.errors.ImageNotFound:
                 print(f"No partial image '{image_name}' to clean up.")
+
             except Exception as cleanup_error:
                 print(f"Failed to clean up image '{image_name}': {str(cleanup_error)}")
     
@@ -58,7 +60,7 @@ def build_mujoco_image(image_name, dockerfile_path, dockefile_name):
 def monitor_container(container):
     """
     Monitor the container state
-    # TODO: Test functionality
+    # TODO: Test and improve functionality
     """
     client = docker.from_env()
     try:
@@ -78,11 +80,10 @@ def monitor_container(container):
 
 def run_mujoco_simulation_in_background(image_name, container_port, host_port, user_id, scene_id):
     """
-    Function to run the Docker container in a separate thread
+    Function to run the mujoco simualation docker container in a separate thread
     """
     try:
-        # Run the Docker container (using the appropriate Docker SDK command)
-        #print(f"image-name: {image_name}")
+        # Run container
         container = run_mujoco_container(image_name, container_port, host_port, user_id, scene_id)
         
         # Monitor the container's status in the background
@@ -94,13 +95,35 @@ def run_mujoco_simulation_in_background(image_name, container_port, host_port, u
 
 
 def run_mujoco_container(image_name, container_port, host_port, user_id, scene_id):
+    """
+    Run mujoco container based on previously build image. The required files to run the simulation
+    are mounted from the local machine (required setting environment variable - see README).
+    On startup the simulation automatically starts.
+
+    For debugging of the container set command='sleep infinity'
+    """
     # TODO: build image and push it to git so we can pull the prebuild image instead of building it from zero every time
     # TODO: check if container is already running
     #* Possible to limit resources: mem_limit="2g" (limit 2GM RAM), nano_cpus=1e9 (1 CPU core)
+
+    host_sim_folder_path = os.getenv("OROM_BACKEND_PATH")
+    target_sim_folder_path = '/sim_ws/simulation_mujoco'
+
+    # Create mount for required simulation files
+    mount = docker.types.Mount(
+        target=target_sim_folder_path,      # Path inside the inner container
+        source= f"{host_sim_folder_path}/simulation_mujoco", # Path on local machine where docker daemon is running
+        type='bind',
+        read_only=True
+    )
+    
     try:
         container = client.containers.run(
             image_name,
             name=f"{image_name}_{user_id}_{scene_id}",      # container name
+            mounts=[mount],
+            network="orom_backend_default",
+            command=f"python -u {target_sim_folder_path}/mujoco_simulation.py",
             detach=True,
             stdout=True,
             stderr=True,
@@ -108,15 +131,13 @@ def run_mujoco_container(image_name, container_port, host_port, user_id, scene_i
             environment={           # environment variables
                         "USER_ID":user_id, 
                         "SCENE_ID":scene_id,
-                        "CONTAINER_PORT":container_port
+                        "CONTAINER_PORT":container_port,
+                        "OROM_BACKEND_URL":os.getenv("OROM_BACKEND_URL"),
                         },
             ports={str(container_port):str(host_port)},  # Port mappings between frontend and simulation
-            #* Bind object_files for faster setup??
-            #volumes={'/host_path/': {'bind': '/container_path/', 'mode': 'rw'}},  # If volume mappings are needed
         )
-
         return container
 
     except Exception as ex:
         print(str(ex))
-        return None
+        return 

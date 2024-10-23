@@ -6,6 +6,7 @@ import asyncio
 import websockets
 import os
 import logging
+import requests
 
 from helpers import create_output_string
 from motion_functions import circular_motion, clifford_attractor
@@ -13,18 +14,24 @@ from motion_functions import circular_motion, clifford_attractor
 # Configure logging to output to standard output
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+
+
 class MuJocoSimulation:
     """
     Class for the Mujoco Simulation.
     Currently it is only publishing demo data!
-    # TODO: how to stream data of multiple robots
+    # TODO: How to stream data of multiple robots
+    # TODO: How to enable users to set parameters
+    # TODO: Put mujoco files in volume instead of copy in dockerfile (no need to rebuild the whole image when changes in file)
+    # TODO: Remove self.joint_names and assume joint-data is in correct order. Or put in DB (in case we add more complex robots where the joint order is not easy)
     """
-    
+
     def __init__(self):
         # Websocket Settings
-        # self.host = "localhost"
         self.host = "0.0.0.0"
         self.port = os.getenv('CONTAINER_PORT')
+        self.user_id = os.getenv('USER_ID')
+        self.scene_id = os.getenv('SCENE_ID')
 
         # Integration timestep in seconds. This corresponds to the amount of time the joint
         # velocities will be integrated for to obtain the desired joint positions. 
@@ -53,9 +60,17 @@ class MuJocoSimulation:
         # Maximum allowable joint velocity in rad/s.
         self.max_angvel = 0.785
 
+        # Get Scene Data
+        try:
+            req = requests.get(url = f"{os.getenv('OROM_BACKEND_URL')}/scene-manager/scenes/{self.scene_id}/")
+            data = req.json()
+            logging.info(data)
+        except Exception as ex:
+            logging.error(ex)
+            
         # Define path to robot xml file
             # UR5e - "universal_robots_ur5e/scene.xml"
-            # Panda - "franka_emika_panda/scene.xml" 
+            # Panda - "franka_emika_panda/scene.xml"
         self.robot_path = "/sim_ws/config/franka_emika_panda/scene.xml"
 
         # Define joint names of the robot. They have to match the names of the urdf-file.
@@ -139,8 +154,8 @@ class MuJocoSimulation:
 
         num_joints = len(self.joint_names)
 
-        # TODO: Implement differentation when visualisation should be opened for debugging and when it 
-        # should run in the backend to save computational power
+        # TODO: Implement differentation when visualisation should be opened for debugging and when it...
+        # TODO: should run in the backend to save computational power
         #simViewer = mujoco.viewer.launch_passive(
         #    model=self.model,
         #    data=self.data,
