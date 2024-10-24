@@ -21,9 +21,10 @@ class MuJocoSimulation:
     Class for the Mujoco Simulation.
     Currently it is only publishing demo data!
     # TODO: How to stream data of multiple robots
-    # TODO: How to enable users to set parameters
-    # TODO: Put mujoco files in volume instead of copy in dockerfile (no need to rebuild the whole image when changes in file)
+    # TODO: Enable users to set parameters -> Save default in DB and make editable
+    # TODO: How to pass error messages to API
     # TODO: Remove self.joint_names and assume joint-data is in correct order. Or put in DB (in case we add more complex robots where the joint order is not easy)
+    # TODO: Implement max velocity and max acceleration constraint per joint
     """
 
     def __init__(self):

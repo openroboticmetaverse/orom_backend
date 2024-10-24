@@ -1,11 +1,12 @@
+from threading import Thread
+from queue import Queue
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from threading import Thread
 
 from .models import Object, Robot, Scene
 from .serializers import ObjectSerializer, RobotSerializer, SceneSerializer
-from .utils import build_mujoco_image, run_mujoco_simulation_in_background
+from .utils import build_mujoco_image, run_mujoco_simulation_in_background, stop_and_remove_container
 
 
 
@@ -61,9 +62,9 @@ class SceneViewSet(viewsets.ModelViewSet):
 
 
 
-class MujocoSimulation(APIView):
+class MujocoSimulationStart(APIView):
     """
-    A viewset that controls the simulation container
+    A viewset that starts the simulation container
     Currently only the POST-method is implemented
     """
     
@@ -84,18 +85,74 @@ class MujocoSimulation(APIView):
             # Build image if it does not exist
             build_mujoco_image(self.image_name, self.dockerfile_path, self.dockerfile_name)
 
-            # Run the Mujoco simulation container asynchronously in a thread
             print("> Start simulation container")
+
+            # Queue for passing errors to api
+            error_queue = Queue()
+
+            # Run the Mujoco simulation container asynchronously in a thread
             thread = Thread(target=run_mujoco_simulation_in_background,
                             args=(self.image_name, self.container_port, self.host_port, 
-                                  request.data['user_id'], request.data['scene_id']))
+                                  request.data['user_id'], request.data['scene_id'],
+                                  error_queue
+                                  )
+                            )
             thread.start()
 
+            # Wait for the thread to finish
+            thread.join()
+
+            # Check if any error was raised inside the thread
+            if not error_queue.empty():
+                error_message = error_queue.get()
+                return error_message
+            
             # Respond with container information
-            return Response({"message": "Simulation-Container starting", "host_port": self.host_port}, 
-                            status=status.HTTP_201_CREATED)
+            return Response({"message": "Simulation-Container started"}, 
+                            status=status.HTTP_200_OK)
         
         except Exception as ex:
             # Handle errors (e.g., container creation failure)
             print(str(ex))
-            return Response({"error": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"message": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class MujocoSimulationStop(APIView):
+    """
+    A viewset that stops and deleted a simulation container
+    Currently only the POST-method is implemented
+    """
+    image_name = "sim_mujoco"
+
+    def post(self, request):
+        # Queue for passing errors to api
+        error_queue = Queue()
+        
+        try:
+            # Run in thread in case the stopping takes longer
+            thread = Thread(target=stop_and_remove_container,
+                            args=(
+                                self.image_name, request.data['user_id'], request.data['scene_id'],
+                                error_queue
+                                )
+                            )
+            thread.start()
+            # Wait for the thread to finish
+            thread.join()
+
+            # Check if any error was raised inside the thread
+            if not error_queue.empty():
+                error_message = error_queue.get()
+                return error_message
+            
+            # Respond with container information
+            return Response({"message": "Simulation-Container stopped and deleted"}, 
+                            status=status.HTTP_200_OK)
+        
+        except Exception as ex:
+            # Handle errors (e.g., container creation failure)
+            print(str(ex))
+            return Response({"message": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    

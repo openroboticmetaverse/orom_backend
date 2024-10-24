@@ -1,5 +1,8 @@
 import docker
 import os
+import time
+from rest_framework import status
+from rest_framework.response import Response
 
 client = docker.from_env()
 
@@ -7,7 +10,6 @@ client = docker.from_env()
 def build_mujoco_image(image_name, dockerfile_path, dockerfile_name):
     """
     Builds the docker image for the mujoco simulation (if does not exist)
-    TODO: Delete intermediate images (tag and name=none) after building
     """
     try:
         # Check if image already exists
@@ -45,15 +47,31 @@ def build_mujoco_image(image_name, dockerfile_path, dockerfile_name):
                 client.images.remove(image=image.id, force=True)
                 print(f"Image '{image_name}' removed successfully.")
 
-            except docker.errors.ImageNotFound:
-                print(f"No partial image '{image_name}' to clean up.")
+            except Exception as ex:
+                print(f"Error while cleaning up failed build: {str(ex)}")
 
-            except Exception as cleanup_error:
-                print(f"Failed to clean up image '{image_name}': {str(cleanup_error)}")
+            # Delete intermediate images (name=none)
+            try: 
+                for image in client.images.list():
+                    print(f"{image.id}-{image.tags}")
+                    if "<none>" in image.tags:
+                        image_id = image.id
+                        print(f"Deleting image with ID: {image_id}")
+                        client.images.remove(image=image_id, force=True)
+
+            except Exception as ex:
+                print(f"An unexpected error occurred: {str(ex)}")
+
+
+            return Response({"message": f"Build failed: {str(build_error)}"}, 
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                            )
     
-
     except Exception as ex:
         print(str(ex))
+        return Response({"message": str(ex)}, 
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                        )
 
 
 
@@ -71,30 +89,33 @@ def monitor_container(container):
         
         # Check if container stopped
         container_obj.wait()
-        print(f"Container {container.id} finished.")
+        print(f"Container {container.name} finished.")
 
     except Exception as ex:
-        print(f"Error monitoring container {container.id}: {str(ex)}")
+        print(f"Error monitoring container {container.name}: {str(ex)}")
 
 
 
-def run_mujoco_simulation_in_background(image_name, container_port, host_port, user_id, scene_id):
+def run_mujoco_simulation_in_background(image_name, container_port, host_port, user_id, scene_id, error_queue):
     """
     Function to run the mujoco simualation docker container in a separate thread
     """
     try:
         # Run container
-        container = run_mujoco_container(image_name, container_port, host_port, user_id, scene_id)
+        container = run_mujoco_container(image_name, container_port, host_port, user_id, scene_id, error_queue)
         
         # Monitor the container's status in the background
         monitor_container(container)
         
     except Exception as ex:
-        print(f"Error running container: {str(ex)}")
+        resp = Response({"message": f"Error running container: {str(ex)}"}, 
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                        )
+        error_queue.put(resp)
 
 
 
-def run_mujoco_container(image_name, container_port, host_port, user_id, scene_id):
+def run_mujoco_container(image_name, container_port, host_port, user_id, scene_id, error_queue):
     """
     Run mujoco container based on previously build image. The required files to run the simulation
     are mounted from the local machine (required setting environment variable - see README).
@@ -124,6 +145,7 @@ def run_mujoco_container(image_name, container_port, host_port, user_id, scene_i
             mounts=[mount],
             network="orom_backend_default",
             command=f"python -u {target_sim_folder_path}/mujoco_simulation.py",
+            #command="sleep infinity",   # debugging container
             detach=True,
             stdout=True,
             stderr=True,
@@ -139,5 +161,38 @@ def run_mujoco_container(image_name, container_port, host_port, user_id, scene_i
         return container
 
     except Exception as ex:
-        print(str(ex))
-        return 
+        resp = Response({"message": f"Error running container: {str(ex)}"}, 
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                        )
+        error_queue.put(resp)
+        return None
+
+
+
+def stop_and_remove_container(image_name, user_id, scene_id, error_queue):
+    """
+    Stop a running docker container.
+    Due to the auto_remove paramater the container is automatically removed after it stops
+    """
+    try:
+        container_name = f"{image_name}_{user_id}_{scene_id}"
+        # Get the container by name
+        container = client.containers.get(container_name)
+        
+        print(f"Stopping container: {container_name}")
+        # Stop container
+        container.stop()
+        
+        print(f"Container '{container_name}' stopped and removed successfully.")
+    
+    except docker.errors.NotFound:
+        resp = Response({"message": f"Container '{container_name}' not found."}, 
+                            status=status.HTTP_404_NOT_FOUND
+                        )
+        error_queue.put(resp)
+    
+    except Exception as ex:
+        resp = Response({"message": str(ex)}, 
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                        )
+        error_queue.put(resp)
