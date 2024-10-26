@@ -75,12 +75,9 @@ class MujocoSimulationStart(APIView):
     host_port = 1345                                # port of frontend, constant because frontend container has only 1 websocket
 
     def post(self, request):
-        # TODO: Check if container of that user and scene exists or is already running
         # TODO: How to generate unused port
-        # TODO: Enable pulling from registry
         # TODO: Currently the config folder with robot models is copied into container -> get data from database
         # TODO: Check and improve logging of simulation container
-        # TODO: Implement api to stop container
         try:
             # Build image if it does not exist
             build_mujoco_image(self.image_name, self.dockerfile_path, self.dockerfile_name)

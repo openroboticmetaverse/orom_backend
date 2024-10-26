@@ -23,7 +23,6 @@ class MuJocoSimulation:
     # TODO: How to stream data of multiple robots
     # TODO: Enable users to set parameters -> Save default in DB and make editable
     # TODO: How to pass error messages to API
-    # TODO: Remove self.joint_names and assume joint-data is in correct order. Or put in DB (in case we add more complex robots where the joint order is not easy)
     # TODO: Implement max velocity and max acceleration constraint per joint
     """
 
@@ -61,7 +60,7 @@ class MuJocoSimulation:
         # Maximum allowable joint velocity in rad/s.
         self.max_angvel = 0.785
 
-        # Get Scene Data
+        # Get Scene Data from DB
         try:
             req = requests.get(url = f"{os.getenv('OROM_BACKEND_URL')}/scene-manager/scenes/{self.scene_id}/")
             data = req.json()
