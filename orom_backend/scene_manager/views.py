@@ -1,8 +1,13 @@
+from threading import Thread
+from queue import Queue
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
 from .models import Object, Robot, Scene
 from .serializers import ObjectSerializer, RobotSerializer, SceneSerializer
+from .utils import build_mujoco_image, run_mujoco_simulation_in_background, stop_and_remove_container
+
 
 
 class ObjectViewSet(viewsets.ModelViewSet):
@@ -54,3 +59,97 @@ class SceneViewSet(viewsets.ModelViewSet):
             'robots': robot_serializer.data,
             'objects': object_serializer.data
         }, status=status.HTTP_200_OK)
+
+
+
+class MujocoSimulationStart(APIView):
+    """
+    A viewset that starts the simulation container
+    Currently only the POST-method is implemented
+    """
+    
+    image_name = "sim_mujoco"                       # name of docker image
+    dockerfile_path = "/app"                        # path to work directory inside the backend docker container
+    dockerfile_name = "docker/Dockerfile_Mujoco"    # filepath of dockerfile
+    container_port = 1345                           # port of simulation container #TODO: make dynamic
+    host_port = 1345                                # port of frontend, constant because frontend container has only 1 websocket
+
+    def post(self, request):
+        # TODO: How to generate unused port
+        # TODO: Currently the config folder with robot models is copied into container -> get data from database
+        # TODO: Check and improve logging of simulation container
+        try:
+            # Build image if it does not exist
+            build_mujoco_image(self.image_name, self.dockerfile_path, self.dockerfile_name)
+
+            print("> Start simulation container")
+
+            # Queue for passing errors to api
+            error_queue = Queue()
+
+            # Run the Mujoco simulation container asynchronously in a thread
+            thread = Thread(target=run_mujoco_simulation_in_background,
+                            args=(self.image_name, self.container_port, self.host_port, 
+                                  request.data['user_id'], request.data['scene_id'],
+                                  error_queue
+                                  )
+                            )
+            thread.start()
+
+            # Wait for the thread to finish
+            thread.join()
+
+            # Check if any error was raised inside the thread
+            if not error_queue.empty():
+                error_message = error_queue.get()
+                return error_message
+            
+            # Respond with container information
+            return Response({"message": "Simulation-Container started"}, 
+                            status=status.HTTP_200_OK)
+        
+        except Exception as ex:
+            # Handle errors (e.g., container creation failure)
+            print(str(ex))
+            return Response({"message": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class MujocoSimulationStop(APIView):
+    """
+    A viewset that stops and deleted a simulation container
+    Currently only the POST-method is implemented
+    """
+    image_name = "sim_mujoco"
+
+    def post(self, request):
+        # Queue for passing errors to api
+        error_queue = Queue()
+        
+        try:
+            # Run in thread in case the stopping takes longer
+            thread = Thread(target=stop_and_remove_container,
+                            args=(
+                                self.image_name, request.data['user_id'], request.data['scene_id'],
+                                error_queue
+                                )
+                            )
+            thread.start()
+            # Wait for the thread to finish
+            thread.join()
+
+            # Check if any error was raised inside the thread
+            if not error_queue.empty():
+                error_message = error_queue.get()
+                return error_message
+            
+            # Respond with container information
+            return Response({"message": "Simulation-Container stopped and deleted"}, 
+                            status=status.HTTP_200_OK)
+        
+        except Exception as ex:
+            # Handle errors (e.g., container creation failure)
+            print(str(ex))
+            return Response({"message": str(ex)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    

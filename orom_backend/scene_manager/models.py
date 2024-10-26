@@ -12,6 +12,9 @@ class Scene(models.Model):
     # TODO: Add connections to user ones they exist
     # user_id = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
+    #! dont need ip_visual -> post request returns port to frontend
+    #websocket_ip_visual = models.CharField(max_length=255, null=True, blank=True, editable=False)
+    #websocket_ip_control = models.CharField(max_length=255, null=True, blank=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
