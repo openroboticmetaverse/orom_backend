@@ -28,7 +28,7 @@ class ReferenceObject(AbstractReference):
     Database of objects the user can place in their scene.
     TODO: Make some objects only available for the user who uploaded it
     """
-    color = models.CharField(null=True, blank=True, max_length=16)    # TODO; determine what color code to use
+
 
     def __str__(self):
         return f"ReferenceObject: {self.name} of type {self.file_type}"

@@ -76,7 +76,6 @@ class MujocoSimulationStart(APIView):
 
     def post(self, request):
         # TODO: How to generate unused port
-        # TODO: Currently the config folder with robot models is copied into container -> get data from database
         # TODO: Check and improve logging of simulation container
         try:
             # Build image if it does not exist

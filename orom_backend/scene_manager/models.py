@@ -63,7 +63,7 @@ class Object(AbstractObject):
     Inherits all properties from the AbstractObject-class and extends them with object specific information
     """
     object_reference = models.ForeignKey(ReferenceObject, on_delete=models.CASCADE)
-    color = models.CharField(max_length=7, null=True, blank=True)
+    color = models.CharField(max_length=7, null=True, blank=True)                   # TODO: Determine what color code to use
 
     def __str__(self):
         return f"Object: {self.name} of Scene {self.scene_id.name}"
