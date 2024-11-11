@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16.0
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: orom_db
+      POSTGRES_USER: orom_admin
+      POSTGRES_PASSWORD: oromPWD4879
+    ports:
+      - "5432:5432"
+
+  orom_backend:
+    container_name: orom-backend
+    image: orom_backend
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_Backend
+    command: sh -c "
+              python orom_backend/manage.py migrate --noinput && 
+              python orom_backend/manage.py runserver 0.0.0.0:8000
+            "
+    restart: always
+    environment:
+      # Both are used in the mujoco simulation container
+      - OROM_BACKEND_PATH=${OROM_BACKEND_PATH}
+      - OROM_BACKEND_URL=http://orom-backend:8000
+    volumes:
+      - .:/app
+      # Bind the host's Docker socket into Django container (required for starting the mujoco container)
+      - /var/run/docker.sock:/var/run/docker.sock 
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
