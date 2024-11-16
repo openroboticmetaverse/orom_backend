@@ -6,8 +6,9 @@ from rest_framework.response import Response
 
 from .models import Object, Robot, Scene
 from .serializers import ObjectSerializer, RobotSerializer, SceneSerializer
-from .utils import build_mujoco_image, run_mujoco_simulation_in_background, stop_and_remove_container
+from .utils import pull_or_build_image, run_mujoco_simulation_in_background, stop_and_remove_container
 
+from . import mujoco_dockerfile_github
 
 
 class ObjectViewSet(viewsets.ModelViewSet):
@@ -73,16 +74,12 @@ class MujocoSimulationStart(APIView):
     dockerfile_name = "docker/Dockerfile_Mujoco"    # filepath of dockerfile
     container_port = 1345                           # port of simulation container #TODO: make dynamic
     host_port = 1345                                # port of frontend, constant because frontend container has only 1 websocket
-
     def post(self, request):
         # TODO: How to generate unused port
         # TODO: Check and improve logging of simulation container
         try:
-            # Build image if it does not exist
-            build_mujoco_image(self.image_name, self.dockerfile_path, self.dockerfile_name)
-
+            pull_or_build_image(self.image_name,self.dockerfile_path,self.dockerfile_name,mujoco_dockerfile_github)
             print("> Start simulation container")
-
             # Queue for passing errors to api
             error_queue = Queue()
 
