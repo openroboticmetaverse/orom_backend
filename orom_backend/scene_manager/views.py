@@ -8,7 +8,7 @@ from .models import Object, Robot, Scene
 from .serializers import ObjectSerializer, RobotSerializer, SceneSerializer
 from .utils import pull_or_build_image, run_mujoco_simulation_in_background, stop_and_remove_container
 
-from . import mujoco_dockerfile_github
+from .constants import mvp_mujoco_dockerfile_github
 
 
 class ObjectViewSet(viewsets.ModelViewSet):
@@ -78,7 +78,7 @@ class MujocoSimulationStart(APIView):
         # TODO: How to generate unused port
         # TODO: Check and improve logging of simulation container
         try:
-            pull_or_build_image(self.image_name,self.dockerfile_path,self.dockerfile_name,mujoco_dockerfile_github)
+            pull_or_build_image(self.image_name,self.dockerfile_path,self.dockerfile_name,mvp_mujoco_dockerfile_github)
             print("> Start simulation container")
             # Queue for passing errors to api
             error_queue = Queue()

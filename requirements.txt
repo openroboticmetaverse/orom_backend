@@ -2,4 +2,3 @@ django
 djangorestframework
 psycopg2
 docker
-python-dotenv

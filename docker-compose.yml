@@ -16,8 +16,6 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile_Backend
-    env_file:
-      - .env
     command: sh -c "
               python orom_backend/manage.py migrate --noinput && 
               python orom_backend/manage.py runserver 0.0.0.0:8000
