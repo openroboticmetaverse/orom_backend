@@ -6,6 +6,22 @@ from rest_framework.response import Response
 
 client = docker.from_env()
 
+def pull_image(image_link,image_name):
+    """
+    Pull a Docker image from the registry.
+    """
+    try:
+        print(f"Attempting to pull image: {image_link}")
+        image = client.images.pull(image_link).tag(image_name)
+        print(f"Successfully pulled image: {image}")
+        return image
+    except docker.errors.ImageNotFound:
+        print(f"Image not found: {image_link}")
+        raise
+    except docker.errors.APIError as e:
+        print(f"Error while pulling image: {e}")
+        raise
+
 
 def build_mujoco_image(image_name, dockerfile_path, dockerfile_name):
     """
@@ -196,3 +212,18 @@ def stop_and_remove_container(image_name, user_id, scene_id, error_queue):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR
                         )
         error_queue.put(resp)
+
+def pull_or_build_image(image_name, dockerfile_path, dockerfile_name, dockerfile_github):
+    """
+    Attempt to pull the Docker image, and if it fails, build the image locally.
+    """
+    try:
+        # Try pulling the image
+        pull_image(dockerfile_github,image_name)
+    except docker.errors.ImageNotFound:
+        print(f"Pull failed. Building image: {image_name}")
+        # If pulling fails, build the image
+        build_mujoco_image(image_name, dockerfile_path, dockerfile_name)
+    except docker.errors.APIError as e:
+        print(f"Unexpected error during pull: {e}. Attempting to build the image.")
+        build_mujoco_image(image_name, dockerfile_path, dockerfile_name)

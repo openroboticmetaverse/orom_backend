@@ -1,0 +1,1 @@
+mvp_mujoco_dockerfile_github = "ghcr.io/openroboticmetaverse/mvp_mujoco_simulation:1.0.0"
