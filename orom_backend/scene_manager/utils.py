@@ -34,12 +34,6 @@ def build_mujoco_image(image_name, dockerfile_path, dockerfile_name):
 
         except Exception as build_error:
             print(f"Build failed: {str(build_error)}")
-            # Print build logs for debugging
-            for log in build_logs:
-                if 'stream' in log:
-                    for line in log['stream'].splitlines():
-                        print(str(line))
-            
             # When building fails: try to clean up by removing any partially built image
             try:
                 image = client.images.get(image_name)
@@ -123,17 +117,16 @@ def run_mujoco_container(image_name, container_port, host_port, user_id, scene_i
 
     For debugging of the container set command='sleep infinity'
     """
-    # TODO: build image and push it to git so we can pull the prebuild image instead of building it from zero every time
     # TODO: check if container is already running
     #* Possible to limit resources: mem_limit="2g" (limit 2GM RAM), nano_cpus=1e9 (1 CPU core)
 
     host_sim_folder_path = os.getenv("OROM_BACKEND_PATH")
-    target_sim_folder_path = '/sim_ws/simulation_mujoco'
+    target_sim_folder_path = '/sim_ws/mvp_mujoco_simulation'
 
     # Create mount for required simulation files
     mount = docker.types.Mount(
         target=target_sim_folder_path,      # Path inside the inner container
-        source= f"{host_sim_folder_path}/simulation_mujoco", # Path on local machine where docker daemon is running
+        source=f"{host_sim_folder_path}/mvp_mujoco_simulation/src", # Path on local machine where docker daemon is running
         type='bind',
         read_only=True
     )

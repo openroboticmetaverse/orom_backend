@@ -1,5 +1,6 @@
 from threading import Thread
 from queue import Queue
+import os
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -69,8 +70,8 @@ class MujocoSimulationStart(APIView):
     """
     
     image_name = "sim_mujoco"                       # name of docker image
-    dockerfile_path = "/app"                        # path to work directory inside the backend docker container
-    dockerfile_name = "docker/Dockerfile_Mujoco"    # filepath of dockerfile
+    base_dir = "/app"                               # path to work directory inside the backend docker container
+    dockerfile_name = "Dockerfile.sim-container"    # name of dockerfile in mvp_mujoco_simulation
     container_port = 1345                           # port of simulation container #TODO: make dynamic
     host_port = 1345                                # port of frontend, constant because frontend container has only 1 websocket
 
@@ -78,8 +79,9 @@ class MujocoSimulationStart(APIView):
         # TODO: How to generate unused port
         # TODO: Check and improve logging of simulation container
         try:
-            # Build image if it does not exist
-            build_mujoco_image(self.image_name, self.dockerfile_path, self.dockerfile_name)
+            # Build image if it does not 
+            dockerfile_path = os.path.join(self.base_dir, "mvp_mujoco_simulation", "docker")
+            build_mujoco_image(self.image_name, dockerfile_path, self.dockerfile_name)
 
             print("> Start simulation container")
 
