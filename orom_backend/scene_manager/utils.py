@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 client = docker.from_env()
 
+
 def pull_image(image_link,image_name):
     """
     Pull a Docker image from the registry.
@@ -21,6 +22,7 @@ def pull_image(image_link,image_name):
     except docker.errors.APIError as e:
         print(f"Error while pulling image: {e}")
         raise
+
 
 
 def build_mujoco_image(image_name, dockerfile_path, dockerfile_name):
@@ -50,12 +52,6 @@ def build_mujoco_image(image_name, dockerfile_path, dockerfile_name):
 
         except Exception as build_error:
             print(f"Build failed: {str(build_error)}")
-            # Print build logs for debugging
-            for log in build_logs:
-                if 'stream' in log:
-                    for line in log['stream'].splitlines():
-                        print(str(line))
-            
             # When building fails: try to clean up by removing any partially built image
             try:
                 image = client.images.get(image_name)
@@ -91,6 +87,25 @@ def build_mujoco_image(image_name, dockerfile_path, dockerfile_name):
 
 
 
+def pull_or_build_image(image_name, dockerdir_path, dockerfile_name, dockerfile_github):
+    """
+    Attempt to pull the Docker image, and if it fails, build the image locally.
+    """
+    try:
+        # Try pulling the image
+        pull_image(dockerfile_github,image_name)
+
+    except docker.errors.ImageNotFound:
+        print(f"Pull failed. Building image: {image_name}")
+        # If pulling fails, build the image
+        build_mujoco_image(image_name, dockerdir_path, dockerfile_name)
+
+    except docker.errors.APIError as e:
+        print(f"Unexpected error during pull: {e}. Attempting to build the image.")
+        build_mujoco_image(image_name, dockerdir_path, dockerfile_name)
+
+
+        
 def monitor_container(container):
     """
     Monitor the container state
@@ -139,17 +154,16 @@ def run_mujoco_container(image_name, container_port, host_port, user_id, scene_i
 
     For debugging of the container set command='sleep infinity'
     """
-    # TODO: build image and push it to git so we can pull the prebuild image instead of building it from zero every time
     # TODO: check if container is already running
     #* Possible to limit resources: mem_limit="2g" (limit 2GM RAM), nano_cpus=1e9 (1 CPU core)
 
     host_sim_folder_path = os.getenv("OROM_BACKEND_PATH")
-    target_sim_folder_path = '/sim_ws/simulation_mujoco'
+    target_sim_folder_path = '/sim_ws/mvp_mujoco_simulation'
 
     # Create mount for required simulation files
     mount = docker.types.Mount(
         target=target_sim_folder_path,      # Path inside the inner container
-        source= f"{host_sim_folder_path}/simulation_mujoco", # Path on local machine where docker daemon is running
+        source=f"{host_sim_folder_path}/mvp_mujoco_simulation/src", # Path on local machine where docker daemon is running
         type='bind',
         read_only=True
     )
@@ -212,18 +226,3 @@ def stop_and_remove_container(image_name, user_id, scene_id, error_queue):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR
                         )
         error_queue.put(resp)
-
-def pull_or_build_image(image_name, dockerfile_path, dockerfile_name, dockerfile_github):
-    """
-    Attempt to pull the Docker image, and if it fails, build the image locally.
-    """
-    try:
-        # Try pulling the image
-        pull_image(dockerfile_github,image_name)
-    except docker.errors.ImageNotFound:
-        print(f"Pull failed. Building image: {image_name}")
-        # If pulling fails, build the image
-        build_mujoco_image(image_name, dockerfile_path, dockerfile_name)
-    except docker.errors.APIError as e:
-        print(f"Unexpected error during pull: {e}. Attempting to build the image.")
-        build_mujoco_image(image_name, dockerfile_path, dockerfile_name)
