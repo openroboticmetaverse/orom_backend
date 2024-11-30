@@ -12,10 +12,7 @@ class SceneSerializer(serializers.ModelSerializer):
 
 
 class ObjectSerializer(serializers.ModelSerializer):
-    # Nested serializer to also get information of reference object
-    object_reference = serializers.PrimaryKeyRelatedField(queryset=ReferenceObject.objects.all())
-
-    class Meta:
+    class Meta:      
         model = Object
         fields = '__all__'
 
