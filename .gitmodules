@@ -1,0 +1,4 @@
+[submodule "mvp_mujoco_simulation"]
+	path = mvp_mujoco_simulation
+	url = git@github.com:openroboticmetaverse/mvp_mujoco_simulation.git
+	branch = main
