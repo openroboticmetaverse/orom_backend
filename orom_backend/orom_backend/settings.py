@@ -146,3 +146,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #! this is only valid for development. In production the static files should be handled by a cloud storage or nginx running in an own container
 MEDIA_URL = 'media/'
 MEDIA_ROOT = '/app/object_files/'
+
+# URL for the model library hosted on GitHub
+MODEL_LIBRARY_URL = 'https://raw.githubusercontent.com/openroboticmetaverse/model-library/refs/heads/main/ref_library.json'
