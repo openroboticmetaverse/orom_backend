@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Scene, Object, Robot
+from object_library.models import ReferenceRobot, ReferenceObject
 from object_library.serializers import ReferenceRobotSerializer, ReferenceObjectSerializer
 
 
@@ -11,18 +12,14 @@ class SceneSerializer(serializers.ModelSerializer):
 
 
 class ObjectSerializer(serializers.ModelSerializer):
-    # Nested serializer to also get information of reference object
-    object_reference = ReferenceObjectSerializer()
-
-    class Meta:
+    class Meta:      
         model = Object
         fields = '__all__'
 
 
 
 class RobotSerializer(serializers.ModelSerializer):
-    # Nested serializer to also get information of reference robot
-    robot_reference = ReferenceRobotSerializer()
+    robot_reference = serializers.PrimaryKeyRelatedField(queryset=ReferenceRobot.objects.all())
 
     class Meta:
         model = Robot
